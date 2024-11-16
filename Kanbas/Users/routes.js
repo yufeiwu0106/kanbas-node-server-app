@@ -5,21 +5,19 @@ let currentUser = null;
 export default function UserRoutes(app) {
   const createUser = (req, res) => {};
   const deleteUser = (req, res) => {};
-  const updateUser = (req, res) => {};
   const signout = (req, res) => {};
-  const profile = (req, res) => {};
 
   app.post("/api/users", createUser);
-  app.put("/api/users/:userId", updateUser);
   app.delete("/api/users/:userId", deleteUser);
   app.post("/api/users/signout", signout);
-  app.post("/api/users/profile", profile);
 
   // sign in
   const signin = (req, res) => {
     console.log(req);
 
     const { username, password } = req.body;
+
+    // update global currentUser to reflect the signed in user
     currentUser = dao.findUserByCredentials(username, password);
     res.json(currentUser);
   };
@@ -45,9 +43,25 @@ export default function UserRoutes(app) {
     res.json(allUsers);
   };
 
-
   app.get("/api/users", findAllUsers);
 
+  // Update user
+  const updateUser = (req, res) => {
+    const userId = req.params.userId;
+    const userUpdates = req.body;
+    dao.updateUser(userId, userUpdates);
+    currentUser = dao.findUserById(userId);
+    res.json(currentUser);
+  };
+
+  app.put("/api/users/:userId", updateUser);
+
+  // profile
+  const profile = (req, res) => {
+    res.json(currentUser);
+  };
+
+  app.post("/api/users/profile", profile);
 
   // find user by id
   const findUserById = (req, res) => {
