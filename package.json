@@ -28,6 +28,8 @@
   },
   "homepage": "https://github.com/yufeiwu0106/kanbas-node-server-app#readme",
   "dependencies": {
+    "axios": "^1.7.7",
+    "cors": "^2.8.5",
     "express": "^4.21.1"
   }
 }
