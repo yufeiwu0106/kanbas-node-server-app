@@ -5,11 +5,9 @@ let currentUser = null;
 export default function UserRoutes(app) {
   const createUser = (req, res) => {};
   const deleteUser = (req, res) => {};
-  const signout = (req, res) => {};
 
   app.post("/api/users", createUser);
   app.delete("/api/users/:userId", deleteUser);
-  app.post("/api/users/signout", signout);
 
   // sign in
   const signin = (req, res) => {
@@ -62,6 +60,15 @@ export default function UserRoutes(app) {
   };
 
   app.post("/api/users/profile", profile);
+
+  // signout
+  const signout = (req, res) => {
+    currentUser = null;
+    res.sendStatus(200);
+  };
+
+  app.post("/api/users/signout", signout);
+
 
   // find user by id
   const findUserById = (req, res) => {
