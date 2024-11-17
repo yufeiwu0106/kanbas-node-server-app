@@ -15,8 +15,8 @@ export default [
     },
     {
         "_id": "234",
-        "username": "dark_knight",
-        "password": "wayne123",
+        "username": "b",
+        "password": "b",
         "firstName": "Bruce",
         "lastName": "Wayne",
         "email": "bruce@wayne.com",
