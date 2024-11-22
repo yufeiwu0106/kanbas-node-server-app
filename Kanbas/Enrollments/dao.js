@@ -1,5 +1,9 @@
 import Database from "../Database/index.js";
 
+export function findAllEnrollments() {
+  return Database.enrollments;
+}
+
 export function findEnrollmentsForCourse(courseId) {
   const { enrollments } = Database;
   return enrollments.filter((enrollment) => enrollment.course === courseId);
@@ -7,7 +11,7 @@ export function findEnrollmentsForCourse(courseId) {
 
 export function enrollUserInCourse(userId, courseId) {
   const { enrollments } = Database;
-  const enrollment = { _id: Date.now(), user: userId, course: courseId };
+  const enrollment = { _id: Date.now().toString(), user: userId, course: courseId };
 
   enrollments.push(enrollment);
 
