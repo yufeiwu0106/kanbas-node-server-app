@@ -4,10 +4,8 @@ import * as enrollmentsDao from "../Enrollments/dao.js";
 
 export default function UserRoutes(app) {
   const createUser = (req, res) => {};
-  const deleteUser = (req, res) => {};
 
   app.post("/api/users", createUser);
-  app.delete("/api/users/:userId", deleteUser);
 
   // sign in
   const signin = async (req, res) => {
@@ -40,7 +38,7 @@ export default function UserRoutes(app) {
   app.post("/api/users/signup", signup);
 
   // find all users
-  const findAllUsers = async(req, res) => {
+  const findAllUsers = async (req, res) => {
     const { role, name } = req.query;
     if (role) {
       const users = await dao.findUsersByRole(role);
@@ -53,7 +51,7 @@ export default function UserRoutes(app) {
       res.json(users);
       return;
     }
-    
+
     const allUsers = await dao.findAllUsers();
     res.json(allUsers);
   };
@@ -61,11 +59,16 @@ export default function UserRoutes(app) {
   app.get("/api/users", findAllUsers);
 
   // Update user
-  const updateUser = (req, res) => {
+  const updateUser = async (req, res) => {
     const userId = req.params.userId;
     const userUpdates = req.body;
-    dao.updateUser(userId, userUpdates);
-    const currentUser = dao.findUserById(userId);
+    
+    await dao.updateUser(userId, userUpdates);
+    const currentUser = req.session["currentUser"];
+
+    if (currentUser && currentUser._id === userId) {
+      req.session["currentUser"] = { ...currentUser, ...userUpdates };
+    }
 
     req.session["currentUser"] = currentUser;
     res.json(currentUser);
@@ -108,7 +111,7 @@ export default function UserRoutes(app) {
     const courses = courseDao.findCoursesForEnrolledUser(userId);
     res.json(courses);
   };
-  
+
   app.get("/api/users/:userId/courses", findCoursesForEnrolledUser);
 
   // Create course
@@ -118,16 +121,22 @@ export default function UserRoutes(app) {
     enrollmentsDao.enrollUserInCourse(currentUser._id, newCourse._id);
     res.json(newCourse);
   };
-  
+
   app.post("/api/users/current/courses", createCourse);
-  
+
   // find user by id
-  const findUserById = (req, res) => {
-    // const userId = req.body;
-    // const user = dao.findUserById(userId);
-    // console.log(user);
-    // res.json(user);
+  const findUserById = async (req, res) => {
+    const user = await dao.findUserById(req.params.userId);
+    res.json(user);
   };
 
   app.get("/api/users/:userId", findUserById);
+
+  // delete user
+  const deleteUser = async (req, res) => {
+    const status = await dao.deleteUser(req.params.userId);
+    res.json(status);
+  };
+
+  app.delete("/api/users/:userId", deleteUser);
 }
