@@ -12,6 +12,12 @@ export default function CourseRoutes(app) {
   // Create a new course
   app.post("/api/courses", async (req, res) => {
     const course = await dao.createCourse(req.body);
+
+    const currentUser = req.session["currentUser"];
+    if (currentUser) {
+      await enrollmentsDao.enrollUserInCourse(currentUser._id, course._id);
+    }
+
     res.json(course);
   });
 
@@ -32,7 +38,7 @@ export default function CourseRoutes(app) {
     const { courseId } = req.params;
     const courseUpdates = req.body;
     const status = await dao.updateCourse(courseId, courseUpdates);
-    
+
     if (status.modifiedCount === 1) {
       res.sendStatus(204);
     } else {
@@ -83,10 +89,18 @@ export default function CourseRoutes(app) {
     res.json(enrollments);
   });
 
+  // enroll user in course
   app.post("/api/courses/:courseId/enrollments", (req, res) => {
     const { courseId } = req.params;
     const { userId } = req.body;
     const enrollment = enrollmentsDao.enrollUserInCourse(userId, courseId);
     res.json(enrollment);
+  });
+
+  // get users for course
+  app.get("/api/courses/:cid/users", async (req, res) => {
+    const { cid } = req.params;
+    const users = await enrollmentsDao.findUsersForCourse(cid);
+    res.json(users);
   });
 }
