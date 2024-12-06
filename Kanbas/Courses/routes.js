@@ -4,15 +4,28 @@ import * as assignmentsDao from "../Assignments/dao.js";
 import * as enrollmentsDao from "../Enrollments/dao.js";
 
 export default function CourseRoutes(app) {
-  app.get("/api/courses", (req, res) => {
-    const courses = dao.findAllCourses();
+  app.get("/api/courses", async (req, res) => {
+    const courses = await dao.findAllCourses();
     res.send(courses);
   });
 
-  app.delete("/api/courses/:courseId", (req, res) => {
+  // Create a new course
+  app.post("/api/courses", async (req, res) => {
+    const course = await dao.createCourse(req.body);
+    res.json(course);
+  });
+
+  // Delete a course
+  app.delete("/api/courses/:courseId", async (req, res) => {
     const { courseId } = req.params;
-    dao.deleteCourse(courseId);
-    res.sendStatus(204);
+    const status = await dao.deleteCourse(courseId);
+
+    // Fix logic to send status code: 'ERR_HTTP_INVALID_STATUS_CODE'
+    if (status.deletedCount === 1) {
+      res.sendStatus(204);
+    } else {
+      res.sendStatus(404);
+    }
   });
 
   app.put("/api/courses/:courseId", (req, res) => {
