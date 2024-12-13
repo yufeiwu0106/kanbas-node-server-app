@@ -134,6 +134,7 @@ export default function UserRoutes(app) {
       const currentUser = req.session["currentUser"];
       uid = currentUser._id;
     }
+    console.log("Unenrolling user from course", uid, cid);
     const status = await enrollmentsDao.unenrollUserFromCourse(uid, cid);
     res.send(status);
   };

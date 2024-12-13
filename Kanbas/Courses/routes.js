@@ -26,6 +26,8 @@ export default function CourseRoutes(app) {
     const { courseId } = req.params;
     const status = await dao.deleteCourse(courseId);
 
+    await enrollmentsDao.deleteEnrollmentsForCourse(courseId);
+
     // Fix logic to send status code: 'ERR_HTTP_INVALID_STATUS_CODE'
     if (status.deletedCount === 1) {
       res.sendStatus(204);

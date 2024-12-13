@@ -30,3 +30,8 @@ export function enrollUserInCourse(user, course) {
 export function unenrollUserFromCourse(user, course) {
   return model.deleteOne({ user, course });
 }
+
+// delete all enrollments for a course
+export function deleteEnrollmentsForCourse(course) {
+  return model.deleteMany({ course: course });
+}
